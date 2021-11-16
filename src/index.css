@@ -11,3 +11,32 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+#grid {
+  display: flex;
+  width: 90%;
+  margin: 2rem 5%;
+}
+  
+#grid .column {
+  display: flex;
+  flex-direction: column;
+  width: 16.66%;
+}
+
+#grid .column .selector {
+  background-color: white;
+  font-size: 3rem;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+#grid .column .slot {
+  padding: 3rem 1rem;
+  border: 1px solid #000;
+}
+
+#grid .column .slot:nth-of-type(even) {
+  background-color: yellow;
+}
