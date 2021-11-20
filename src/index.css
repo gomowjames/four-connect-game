@@ -33,10 +33,34 @@ code {
 }
 
 #grid .column .slot {
-  padding: 3rem 1rem;
+  padding: 25%;
   border: 1px solid #000;
+  display: flex;
+  background-color: #fff;
 }
 
-#grid .column .slot:nth-of-type(even) {
-  background-color: yellow;
+#grid .column .slot::before {
+  content:"";
+/*
+  width:50%;
+  height:50%;
+*/
+  height: 100px;
+  width: 100px;
+  margin:auto;
+  background-color: #fff;
+  opacity: 0;
+  transition: all 300ms ease-in-out;
+}
+
+#grid .column .slot.red::before {
+  opacity: 1;
+  background-color: red;
+  border-radius:50%;
+}
+
+#grid .column .slot.black::before {
+  opacity: 1;
+  background-color: black;
+  border-radius:50%;
 }

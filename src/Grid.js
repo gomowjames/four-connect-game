@@ -1,29 +1,70 @@
 import React from 'react';
-import Slot from './Slot';
+import Column from './Column.js';
 
 export default class Grid extends React.Component {
   constructor(props) {
     super(props);
+    
+    const columns = new Array(7);
+    for ( let i = 0; i < columns.length; i++ ) { columns[i] = new Array(6).fill( null ); }
+    
     this.state = {
-      slots: Array(42).fill(null),
+      columns: columns,
       redIsNext: true,
+      color: 'Empty',
+      index: null,
     };
   }
 
+/*
   handleClick(i) {
     const slots = this.state.slots.slice();
-    slots[i] = 'X';
+
+    if ( slots[i] ) {
+      return;
+    }
+
+    slots[i] = this.state.redIsNext ? 'red' : 'black';
     this.setState({
       slots: slots,
       redIsNext: !this.state.redIsNext,
     });
   }
+*/
 
-  drawSlot(i) {
+  handleClick(i) {
+    const columns = this.state.columns.slice();
+
+    this.setState({
+      columns: columns,
+      redIsNext: !this.state.redIsNext,
+      color: this.state.redIsNext ? 'Red' : 'Black',
+    });
+
+//     columns[i] = this.state.redIsNext ? 'Red' : 'Black';
+    
+    for ( let x = columns[i].length - 1; x >= 0; x-- ) {
+      if ( !columns[i][x] ) {
+        columns[i][x] = this.state.redIsNext ? 'Red' : 'Black';
+        
+        this.setState({
+          index: x,          
+        })
+        return;
+      }
+    }
+
+    return;
+  }
+
+  renderColumn(i) {
     return (
-      <Slot
-        value={this.state.slots[i]} 
-        onClick={() => this.handleClick(i)}
+      <Column
+        key={i}
+        className={this.state.color}
+        redIsNext={this.state.redIsNext}
+        index={this.state.index}
+        handleClick={ () => this.handleClick(i) }
       />
     );
   }
@@ -36,82 +77,15 @@ export default class Grid extends React.Component {
       <>
       <header>{status}</header>
       <section id="grid">
-        <div className="column">
-          <button className="selector">&#8681;</button>
-          {this.drawSlot(1)}
-          {this.drawSlot(2)}
-          {this.drawSlot(3)}
-          {this.drawSlot(4)}
-          {this.drawSlot(5)}
-          {this.drawSlot(6)}
-        </div>
-        <div className="column">
-          <button className="selector">&#8681;</button>
-          {this.drawSlot(7)}
-          {this.drawSlot(8)}
-          {this.drawSlot(9)}
-          {this.drawSlot(10)}
-          {this.drawSlot(11)}
-          {this.drawSlot(12)}
-        </div>
-        <div className="column">
-          <button className="selector">&#8681;</button>
-          {this.drawSlot(13)}
-          {this.drawSlot(14)}
-          {this.drawSlot(15)}
-          {this.drawSlot(16)}
-          {this.drawSlot(17)}
-          {this.drawSlot(18)}
-        </div>
-        <div className="column">
-          <button className="selector">&#8681;</button>
-          {this.drawSlot(19)}
-          {this.drawSlot(20)}
-          {this.drawSlot(21)}
-          {this.drawSlot(22)}
-          {this.drawSlot(23)}
-          {this.drawSlot(24)}
-        </div>
-        <div className="column">
-          <button className="selector">&#8681;</button>
-          {this.drawSlot(25)}
-          {this.drawSlot(26)}
-          {this.drawSlot(27)}
-          {this.drawSlot(28)}
-          {this.drawSlot(29)}
-          {this.drawSlot(30)}
-        </div>
-        <div className="column">
-          <button className="selector">&#8681;</button>
-          {this.drawSlot(31)}
-          {this.drawSlot(32)}
-          {this.drawSlot(33)}
-          {this.drawSlot(34)}
-          {this.drawSlot(35)}
-          {this.drawSlot(36)}
-        </div>
-        <div className="column">
-          <button className="selector">&#8681;</button>
-          {this.drawSlot(37)}
-          {this.drawSlot(38)}
-          {this.drawSlot(39)}
-          {this.drawSlot(40)}
-          {this.drawSlot(41)}
-          {this.drawSlot(42)}
-        </div>
+        {this.renderColumn(0)}
+        {this.renderColumn(1)}
+        {this.renderColumn(2)}
+        {this.renderColumn(3)}
+        {this.renderColumn(4)}
+        {this.renderColumn(5)}
+        {this.renderColumn(6)}
       </section>
       </>
     )
   }
 }
-
-/*
-export default function Grid() {
-  
-  function drawSlot(i) {
-    return(
-      <Slot value={i} />
-    );
-  }
-}
-*/
