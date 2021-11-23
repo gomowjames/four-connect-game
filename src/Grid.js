@@ -7,9 +7,12 @@ export default class Grid extends React.Component {
     
     const columns = new Array(7);
     for ( let i = 0; i < columns.length; i++ ) { columns[i] = new Array(6).fill( null ); }
-    
+
+const grid = [ columns[0], columns[1], columns[2], columns[3], columns[4], columns[5], columns[6] ];  
+      
     this.state = {
-      columns: columns,
+      grid: grid,
+      //columns: columns,
       redIsNext: true,
       color: 'Empty',
       index: null,
@@ -33,19 +36,21 @@ export default class Grid extends React.Component {
 */
 
   handleClick(i) {
-    const columns = this.state.columns.slice();
+    const grid = this.state.grid.slice();
 
     this.setState({
-      columns: columns,
+      grid: grid,
+      //columns: columns,
       redIsNext: !this.state.redIsNext,
       color: this.state.redIsNext ? 'Red' : 'Black',
     });
 
 //     columns[i] = this.state.redIsNext ? 'Red' : 'Black';
     
-    for ( let x = columns[i].length - 1; x >= 0; x-- ) {
-      if ( !columns[i][x] ) {
-        columns[i][x] = this.state.redIsNext ? 'Red' : 'Black';
+    for ( let x = grid[i].length - 1; x >= 0; x-- ) {
+
+      if ( !grid[i][x] ) {
+        grid[i][x] = this.state.redIsNext ? 'Red' : 'Black';
         
         this.setState({
           index: x,          

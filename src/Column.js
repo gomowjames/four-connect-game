@@ -8,7 +8,7 @@ export default class Column extends React.Component {
 
   drawSlot(i) {
     
-console.log( this.props.index )    
+//console.log( this.props.index )    
       if ( i === this.props.index ) {
         return (
           <Slot
