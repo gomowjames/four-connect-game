@@ -41,10 +41,6 @@ code {
 
 #grid .column .slot::before {
   content:"";
-/*
-  width:50%;
-  height:50%;
-*/
   height: 100px;
   width: 100px;
   margin:auto;
@@ -53,13 +49,13 @@ code {
   transition: all 300ms ease-in-out;
 }
 
-#grid .column .slot.red::before {
+#grid .column .slot.color-1::before {
   opacity: 1;
   background-color: red;
   border-radius:50%;
 }
 
-#grid .column .slot.black::before {
+#grid .column .slot.color-2::before {
   opacity: 1;
   background-color: black;
   border-radius:50%;
