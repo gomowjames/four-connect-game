@@ -2,9 +2,10 @@ import React from 'react';
 import Column from './Column.js';
 import Slot from './Slot.js';
 
-const rows = 6;
-const columns = 7;
+const xAxis = 7;
+const yAxis = 6;
 const toWin = 4; // # in a row needed to win
+let winner = false;
 
 export default class Grid extends React.Component {
   constructor(props) {
@@ -26,11 +27,11 @@ export default class Grid extends React.Component {
   buildVirtualModel() {
     let newVirtGridModel = [];
     
-    for( let x = 0; x < columns; x++ ) {
+    for( let x = 0; x < xAxis; x++ ) {
       
       let newVirtColumn = [];
         
-        for( let y = 0; y < rows; y++ ) {
+        for( let y = 0; y < yAxis; y++ ) {
           newVirtColumn.push( 0 );
         }
 
@@ -47,11 +48,11 @@ export default class Grid extends React.Component {
     
     let gameGrid = [];
     
-    for( let a = 0; a < columns; a++ ) {
+    for( let a = 0; a < xAxis; a++ ) {
       
       let newColumn = [];
         
-        for( let b = 0; b < rows; b++ ) {
+        for( let b = 0; b < yAxis; b++ ) {
           newColumn.push( <Slot key={b} color={0} handleDrop={this.handleDrop} position={ [a,b] }></Slot> );
         }
 
@@ -69,7 +70,7 @@ export default class Grid extends React.Component {
     let newGameGrid = [];
     let colorValue;
 
-    // Loop through main gridModel array where x represents the columns.
+    // Loop through main gridModel array where x represents the xAxis.
     for ( let x = 0; x < this.gridModel.length; x++ ) {
       
       // Create empty array to be filled with slots
@@ -128,75 +129,215 @@ export default class Grid extends React.Component {
         player1: !prevState.player1,
       }
     })
-    
-    if ( this.checkWinVertical( chipPlacement, this.state.player1 ? 1 : 2 ) === true ) {
+
+    if( this.checkWinVertical( chipPlacement, this.state.player1 ? 1 : 2 ) === true ) {
+      this.showWinner(this.state.player1 ? 'Red' : 'Black');
+      console.log( (this.state.player1 ? 'Red' : 'Black') + " WINS!" );
+    } else if ( this.checkWinHorizontal( chipPlacement, this.state.player1 ? 1 : 2 ) === true ) {
+      this.showWinner(this.state.player1 ? 'Red' : 'Black');
+      console.log( (this.state.player1 ? 'Red' : 'Black') + " WINS!" );
+    } else if ( this.checkWinDiagDown( chipPlacement, this.state.player1 ? 1 : 2 ) === true ) {
+      this.showWinner(this.state.player1 ? 'Red' : 'Black');
+      console.log( (this.state.player1 ? 'Red' : 'Black') + " WINS!" );
+    } else if ( this.checkWinDiagUp( chipPlacement, this.state.player1 ? 1 : 2 ) === true ) {
+      this.showWinner(this.state.player1 ? 'Red' : 'Black');
       console.log( (this.state.player1 ? 'Red' : 'Black') + " WINS!" );
     }
   }
 
+checkWinVertical( position, player ) {
 
-checkSlots( maxIndex, index, coord, player ) {
-
-  for( let i = index; i > rows - maxIndex; i-- ) {
-
-    if( coord[i] === player )  {
-
-      // start at 1 b/c that is the newly placed gamepiece
-      let consecutive = 1;
-
-console.log("coord[" + i + "] = " + coord[i] + " player = " + player);
-
-      // this will loop through the column array backwards
-      for( let j = 1; j < toWin; j++ ) {
-
-        let nextIndex = i - j;
-
-//console.log("nextIndex = " + nextIndex);
-      
-        if( coord[nextIndex] === player ) {
-          // if it's a match than add one
-          consecutive++
+  let diffTotal = 0; // represents slots below of played position
   
-  console.log("consec = " + consecutive);
-  
-          if( consecutive === toWin ){
-            console.log("WINNER");
-            return true;
-          }          
-        }
-      }
-    } else {
+  while(true) {
+    if( position[1] + diffTotal + 1 === yAxis ) {
       break;
     }
+    diffTotal += 1;    
   }
+  
+  let countdown = 0;
+  let consecutive = 0;
+  
+  while(true) {
+
+    if( this.gridModel[position[0]][position[1] + diffTotal - countdown] === player ) {
+
+      consecutive += 1;
+
+      console.log("vert consec = " + consecutive);
+
+      if( consecutive === toWin ) {
+        return true;
+      }
+
+    } else {
+      consecutive = 0;
+    }
+
+    // -1 represents end of array so break or else crash
+    if( position[1] + diffTotal - ( countdown + 1 ) === -1 ) {
+      break;
+    }
+    
+    countdown += 1;
+  }
+
+  return false;
 }
 
-  checkWinVertical( position, player ) {
-
-    let maxIndex = rows - ( rows - toWin ); // greater than this row and a win not possible
-    let index = rows-1; // index to search the array starting at bottom of column
-    let coord = this.gridModel[position[0]]; // user clicked this column on the x axis
-
-    // loop through the column
-    for( let x = 0; x < maxIndex-1; x++ ) {
-
-      // check for winning amount in a row
-      this.checkSlots( maxIndex, index, coord, player );
-      
-      // subtract to move up the column
-      index--;
+checkWinHorizontal( position, player ) {
+  let diffTotal = 0; // represents slots right of played position
+  
+  while(true) {
+    if( position[0] + diffTotal + 1 === xAxis ) {
+      break;
     }
+    diffTotal += 1;
   }
+
+  let countdown = 0;
+  let consecutive = 0;
+
+  while(true) {
+
+    if( this.gridModel[position[0] + diffTotal - countdown][position[1]] === player ) {
+
+      consecutive += 1;
+
+      console.log("horiz consec = " + consecutive);
+
+      if( consecutive === toWin ) {
+        return true;
+      }
+
+    } else {
+      consecutive = 0;
+    }
+    
+    // -1 represents end of array so break or else crash
+    if( position[0] + diffTotal - ( countdown + 1 ) === -1 ) {
+      break;
+    }
+    
+    countdown += 1;
+  }
+  
+  return false;
+}
+
+checkWinDiagDown( position, player ) {
+  let diffTotal = 0; // represents slots right of played position
+  
+  while(true) {
+    if( position[0] + diffTotal + 1 === xAxis ) {
+      break;
+    } else if( position[1] + diffTotal + 1 === yAxis) {
+      break;
+    }
+    
+    diffTotal += 1;
+  }
+
+  let countdown = 0;
+  let consecutive = 0;
+
+  while(true) {
+
+      if( this.gridModel[position[0] + diffTotal - countdown][position[1] + diffTotal - countdown] === player ) {
+  
+        consecutive += 1;
+  
+        console.log("diag consec = " + consecutive);
+  
+        if( consecutive === toWin ) {
+          return true;
+        }
+  
+      } else {
+        consecutive = 0;
+      }
+
+
+    // -1 represents end of array so break or else crash
+    if( position[0] + diffTotal - ( countdown + 1 ) === -1 ) {
+      break;
+    } else if( position[1] + diffTotal - ( countdown + 1 ) === -1 ) {
+      break;
+    }
+    
+    countdown += 1;
+  }
+  
+  return false;
+}
+
+checkWinDiagUp( position, player ) {
+  let diffTotal = 0;
+  
+  while(true) {
+    if( position[0] + diffTotal + 1 === xAxis ) {
+      break;
+    } else if( position[1] - diffTotal - 1 === -1 ) {
+      break;
+    }
+    
+    diffTotal += 1;
+  }
+
+  let countdown = 0;
+  let consecutive = 0;
+
+  while(true) {
+
+      if( this.gridModel[position[0] + diffTotal - countdown][position[1] - diffTotal + countdown] === player ) {
+  
+        consecutive += 1;
+  
+        if( consecutive === toWin ) {
+          return true;
+        }
+  
+      } else {
+        consecutive = 0;
+      }
+
+    // -1 represents end of array so break or else crash
+    if( position[0] + diffTotal - ( countdown + 1 ) === -1 ) {
+      break;
+    } else if( position[1] - diffTotal + ( countdown + 1 ) === yAxis ) {
+      break;
+    }    
+    countdown += 1;
+  }
+  
+  return false;
+}
+
+showWinner( player ) {
+  this.setState({
+    grid: <div><div className="winner">{`${player} wins!`}</div><button onClick={ () => this.buildGameGrid() } className="activate">New Game</button></div>
+  })
+}
 
   render() {
     
     const status = "Player's turn: " + (this.state.player1 ? 'Red' : 'Black');
     
     return(
-      <>
-      <header key={1} >{status}</header>
-      <section key={2} id="grid">
-        { this.state.gameOn ? this.state.grid : <button onClick={ () => this.buildGameGrid() } className="activate">New Game</button> }
+      <>      
+
+      { this.state.gameOn ? <header>{status}</header> : null  }
+
+      <section key={2} id="grid" style={{width: this.props.width + 'px', height: this.props.height + 'px' }}>
+
+      { this.state.gameOn ? this.state.grid : 
+        <header>
+          <h1>Get 4 in Row!</h1>
+          <h2>Try to get four in a row horizontally, vertically, or diagonally.</h2>
+          <button onClick={ () => this.buildGameGrid() } className="activate">New Game</button>
+        </header>
+      }
         
       </section>
       </>
