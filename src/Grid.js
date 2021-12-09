@@ -1,11 +1,12 @@
 import React from 'react';
 import Column from './Column.js';
 import Slot from './Slot.js';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 
 const xAxis = 7;
 const yAxis = 6;
 const toWin = 4; // # in a row needed to win
-let winner = false;
 
 export default class Grid extends React.Component {
   constructor(props) {
@@ -14,6 +15,8 @@ export default class Grid extends React.Component {
     this.gridModel = [];
     this.state = {
       gameOn: false,
+      gameWon: false,
+      winner: 0,
       grid: [],
       player1: true,
       color: 0,
@@ -63,6 +66,7 @@ export default class Grid extends React.Component {
     this.setState({
       grid: gameGrid,
       gameOn: true,
+      gameWon: false
     });
   }
 
@@ -98,6 +102,7 @@ export default class Grid extends React.Component {
   }
 
   handleDrop = ( position ) => {
+  if ( !this.state.gameWon ) {
     // Represents player's dropped chip
     let chipPlacement = [];
     
@@ -131,18 +136,15 @@ export default class Grid extends React.Component {
     })
 
     if( this.checkWinVertical( chipPlacement, this.state.player1 ? 1 : 2 ) === true ) {
-      this.showWinner(this.state.player1 ? 'Red' : 'Black');
-      console.log( (this.state.player1 ? 'Red' : 'Black') + " WINS!" );
+      this.showWinner(this.state.player1 );
     } else if ( this.checkWinHorizontal( chipPlacement, this.state.player1 ? 1 : 2 ) === true ) {
-      this.showWinner(this.state.player1 ? 'Red' : 'Black');
-      console.log( (this.state.player1 ? 'Red' : 'Black') + " WINS!" );
+      this.showWinner(this.state.player1 );
     } else if ( this.checkWinDiagDown( chipPlacement, this.state.player1 ? 1 : 2 ) === true ) {
-      this.showWinner(this.state.player1 ? 'Red' : 'Black');
-      console.log( (this.state.player1 ? 'Red' : 'Black') + " WINS!" );
+      this.showWinner(this.state.player1 );
     } else if ( this.checkWinDiagUp( chipPlacement, this.state.player1 ? 1 : 2 ) === true ) {
-      this.showWinner(this.state.player1 ? 'Red' : 'Black');
-      console.log( (this.state.player1 ? 'Red' : 'Black') + " WINS!" );
+      this.showWinner(this.state.player1 );
     }
+  }
   }
 
 checkWinVertical( position, player ) {
@@ -164,8 +166,6 @@ checkWinVertical( position, player ) {
     if( this.gridModel[position[0]][position[1] + diffTotal - countdown] === player ) {
 
       consecutive += 1;
-
-      console.log("vert consec = " + consecutive);
 
       if( consecutive === toWin ) {
         return true;
@@ -204,8 +204,6 @@ checkWinHorizontal( position, player ) {
     if( this.gridModel[position[0] + diffTotal - countdown][position[1]] === player ) {
 
       consecutive += 1;
-
-      console.log("horiz consec = " + consecutive);
 
       if( consecutive === toWin ) {
         return true;
@@ -247,8 +245,6 @@ checkWinDiagDown( position, player ) {
       if( this.gridModel[position[0] + diffTotal - countdown][position[1] + diffTotal - countdown] === player ) {
   
         consecutive += 1;
-  
-        console.log("diag consec = " + consecutive);
   
         if( consecutive === toWin ) {
           return true;
@@ -315,29 +311,39 @@ checkWinDiagUp( position, player ) {
 }
 
 showWinner( player ) {
+  
+let winner = player ? 'Red' : 'Black';
+let winningColor = player ? 1 : 2;
+
   this.setState({
-    grid: <div><div className="winner">{`${player} wins!`}</div><button onClick={ () => this.buildGameGrid() } className="activate">New Game</button></div>
+    gameWon: true,
+    winner: winner,
+    color: winningColor,
+    
+/*     <div></div> */
   })
 }
 
   render() {
     
-    const status = "Player's turn: " + (this.state.player1 ? 'Red' : 'Black');
+    const status = (this.state.player1 ? "Red's " : "Black's ") + " turn";
+    const textColor = (this.state.player1 ? 1 : 2)
     
     return(
-      <>      
+      <>
+      { this.state.gameOn && this.state.gameWon === false ? <header className={`color-${textColor}`}><Typography variant="h6" pt={2} pb={2}>{status}</Typography></header> : null  }
 
-      { this.state.gameOn ? <header>{status}</header> : null  }
+      { this.state.gameOn && this.state.gameWon === true ? <header className={`color-${this.state.color}`}><Typography variant="h2">{`${this.state.winner} wins!`}</Typography><Button variant="contained" size="large" color="primary" sx={{ mt: 1, mb:2, border:1, bgcolor:"transparent" }} onClick={ () => this.buildGameGrid() } className="">Start New Game</Button></header> : null  }
 
       <section key={2} id="grid" style={{width: this.props.width + 'px', height: this.props.height + 'px' }}>
 
-      { this.state.gameOn ? this.state.grid : 
-        <header>
-          <h1>Get 4 in Row!</h1>
-          <h2>Try to get four in a row horizontally, vertically, or diagonally.</h2>
-          <button onClick={ () => this.buildGameGrid() } className="activate">New Game</button>
-        </header>
-      }
+        { this.state.gameOn ? this.state.grid : 
+          <header>
+            <Typography variant="h2">Classic Connect Four!</Typography>
+            <Typography variant="h6" mb={2}>Try to get four in a row horizontally, vertically, or diagonally.</Typography>
+            <Button variant="contained" size="large" color="primary" onClick={ () => this.buildGameGrid() } className="">Start New Game</Button>
+          </header>
+        }
         
       </section>
       </>
