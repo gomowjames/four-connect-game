@@ -21,15 +21,19 @@ code {
   background-color: black;
 }
 
+#game header {
+  width: 100%;
+  text-align: center;
+}
+
 #grid {
   display: flex;
-  max-width: 600px;
-  max-height: 600px;
-  margin: 0 auto;
+  max-width: 95vw;
+  max-height: 95vh;
+  margin: 2.5vw auto;
 }
 
 #grid header {
-  width: 100%;
   align-self: center;
 }
 
@@ -44,7 +48,7 @@ code {
 #grid .column {
   display: flex;
   flex-direction: column;
-  width: 16.66%;
+  width: 16.66vw;
 }
 
 #grid .column .selector {
@@ -57,7 +61,7 @@ code {
 
 #grid .column .slot {
   height: 100%;
-  padding: 25%;
+  padding: 0;
   border: 1px solid #000;
   display: flex;
   background-color: #fff;
@@ -65,9 +69,8 @@ code {
 
 #grid .column .slot::before {
   content:"";
-  height: 100%;
-  min-height: 10px;
-  width: 100%;
+  min-height: 10vw;
+  min-width: 10vw;
   margin:auto;
   background-color: #fff;
   opacity: 0;

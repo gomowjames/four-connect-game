@@ -1,14 +1,18 @@
 import './App.css';
 
 import Game from './Game.js';
+import { ThemeProvider, createTheme, responsiveFontSizes } from '@mui/material/styles';
+
+let theme = createTheme();
+theme = responsiveFontSizes(theme);
 
 function App() {
   return (
-    <div className="App">
+    <ThemeProvider theme={theme} className="App">
     
       <Game />
     
-    </div>
+    </ThemeProvider>
   );
 }
 
