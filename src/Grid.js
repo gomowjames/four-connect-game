@@ -7,6 +7,8 @@ import Typography from '@mui/material/Typography';
 const xAxis = 7;
 const yAxis = 6;
 const toWin = 4; // # in a row needed to win
+let scoreRed = 0;
+let scoreBlack = 0;
 
 export default class Grid extends React.Component {
   constructor(props) {
@@ -315,12 +317,16 @@ showWinner( player ) {
 let winner = player ? 'Red' : 'Black';
 let winningColor = player ? 1 : 2;
 
+  if( winningColor === 1 ) {
+    scoreRed += 1;
+  } else {
+    scoreBlack += 1;
+  }
+
   this.setState({
     gameWon: true,
     winner: winner,
     color: winningColor,
-    
-/*     <div></div> */
   })
 }
 
@@ -331,9 +337,9 @@ let winningColor = player ? 1 : 2;
     
     return(
       <>
-      { this.state.gameOn && this.state.gameWon === false ? <header className={`color-${textColor}`}><Typography variant="h6" pt={2} pb={2}>{status}</Typography></header> : null  }
+      { this.state.gameOn && this.state.gameWon === false ? <header className={`color-${textColor}`}><Typography variant="h6" pt={1} >{status}</Typography><Typography variant="h6" id="scorekeep" pt={0}><span className="score color-1">{scoreRed}</span> – <span className="score color-2">{scoreBlack}</span></Typography></header> : null  }
 
-      { this.state.gameOn && this.state.gameWon === true ? <header className={`color-${this.state.color}`}><Typography variant="h2">{`${this.state.winner} wins!`}</Typography><Button variant="contained" size="large" color="primary" sx={{ mt: 1, mb:2, border:1, bgcolor:"transparent" }} onClick={ () => this.buildGameGrid() } className="">Start New Game</Button></header> : null  }
+      { this.state.gameOn && this.state.gameWon === true ? <header className={`color-${this.state.color}`}><Typography variant="h2" mb={1}> {`${this.state.winner} wins!`}</Typography><Typography variant="h2" id="scorekeep"><span className="score color-1">{scoreRed}</span> – <span className="score color-2">{scoreBlack}</span></Typography><Button variant="contained" size="large" color="primary" sx={{ mt: 1, mb:2, border:1, bgcolor:"transparent" }} onClick={ () => this.buildGameGrid() } className="">Start New Game</Button></header> : null  }
 
       <section key={2} id="grid" style={{width: this.props.width + 'px', height: this.props.height + 'px' }}>
 

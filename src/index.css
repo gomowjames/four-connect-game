@@ -16,9 +16,31 @@ code {
   color: white;
   background-color: red;
 }
+
 #game header.color-2 {
   color: white;
   background-color: black;
+}
+
+#scorekeep {
+  display: block;
+  margin-top: 0.5rem;
+  padding-bottom: 1rem;
+  font-weight: 700;
+}
+
+#scorekeep .color-1 {
+  color: red;
+  background-color: white;
+  padding: 0.5rem 1rem;
+  display: inline-block;
+}
+ 
+#scorekeep .color-2 {
+  color: black;
+  background-color: white;
+  padding: 0.5rem 1rem;
+  display: inline-block;
 }
 
 #game header {
