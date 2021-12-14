@@ -104,49 +104,49 @@ export default class Grid extends React.Component {
   }
 
   handleDrop = ( position ) => {
-  if ( !this.state.gameWon ) {
-    // Represents player's dropped chip
-    let chipPlacement = [];
-    
-    // position[0] represents the x, i.e. the column that was clicked
-    // position[1] represents the y which is populated by the loop index
-    // Loop backwards through this column
-    for( let y = this.gridModel[position[0]].length; y >=0;  y-- ) {
-
-      // Check if slot has a value yet
-      if( this.gridModel[position[0]][y] === 0 ) {
-
-        // Update color value based on whose turn it is
-        this.gridModel[position[0]][y] = this.state.player1 ? 1 : 2 
-
-        // Add the slot position to be colored
-        chipPlacement.push( position[0], y );
-
-//console.log(chipPlacement);
-
-        // End the loop
-        break;
-      } 
-    }
-
-    // Update STATE from previous STATE
-    this.setState( prevState => {
-      return {
-        grid: this.updateGameGrid(),
-        player1: !prevState.player1,
+    if ( !this.state.gameWon ) {
+      // Represents player's dropped chip
+      let chipPlacement = [];
+      
+      // position[0] represents the x, i.e. the column that was clicked
+      // position[1] represents the y which is populated by the loop index
+      // Loop backwards through this column
+      for( let y = this.gridModel[position[0]].length; y >=0;  y-- ) {
+  
+        // Check if slot has a value yet
+        if( this.gridModel[position[0]][y] === 0 ) {
+  
+          // Update color value based on whose turn it is
+          this.gridModel[position[0]][y] = this.state.player1 ? 1 : 2 
+  
+          // Add the slot position to be colored
+          chipPlacement.push( position[0], y );
+  
+  //console.log(chipPlacement);
+  
+          // End the loop
+          break;
+        } 
       }
-    })
-
-    if( this.checkWinVertical( chipPlacement, this.state.player1 ? 1 : 2 ) === true ) {
-      this.showWinner(this.state.player1 );
-    } else if ( this.checkWinHorizontal( chipPlacement, this.state.player1 ? 1 : 2 ) === true ) {
-      this.showWinner(this.state.player1 );
-    } else if ( this.checkWinDiagDown( chipPlacement, this.state.player1 ? 1 : 2 ) === true ) {
-      this.showWinner(this.state.player1 );
-    } else if ( this.checkWinDiagUp( chipPlacement, this.state.player1 ? 1 : 2 ) === true ) {
-      this.showWinner(this.state.player1 );
+  
+      // Update STATE from previous STATE
+      this.setState( prevState => {
+        return {
+          grid: this.updateGameGrid(),
+          player1: !prevState.player1,
+        }
+      })
+  
+      if( this.checkWinVertical( chipPlacement, this.state.player1 ? 1 : 2 ) === true ) {
+        this.showWinner(this.state.player1 );
+      } else if ( this.checkWinHorizontal( chipPlacement, this.state.player1 ? 1 : 2 ) === true ) {
+        this.showWinner(this.state.player1 );
+      } else if ( this.checkWinDiagDown( chipPlacement, this.state.player1 ? 1 : 2 ) === true ) {
+        this.showWinner(this.state.player1 );
+      } else if ( this.checkWinDiagUp( chipPlacement, this.state.player1 ? 1 : 2 ) === true ) {
+        this.showWinner(this.state.player1 );
+      }
     }
-  }
   }
 
 checkWinVertical( position, player ) {
