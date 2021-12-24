@@ -1,6 +1,7 @@
 import React from 'react';
 import Column from './Column.js';
 import Slot from './Slot.js';
+import Header from './Header.js';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 
@@ -17,8 +18,7 @@ export default class Grid extends React.Component {
     this.gridModel = [];
     this.state = {
       gameOn: false,
-      gameWon: false,
-      gameDraw: false,
+      gameStatus: 0, // 0 = "active" / 1 = "game has been won" / 2 = "game is a draw"
       chipCounter: 0,
       winner: 0,
       grid: [],
@@ -70,8 +70,7 @@ export default class Grid extends React.Component {
     this.setState({
       grid: gameGrid,
       gameOn: true,
-      gameWon: false,
-      gameDraw: false,
+      gameStatus: 0,
       chipCounter: 1,
     });
   }
@@ -108,7 +107,7 @@ export default class Grid extends React.Component {
   }
 
   handleDrop = ( position ) => {
-    if ( !this.state.gameWon ) {
+    if ( this.state.gameStatus === 0 ) {
       // Represents player's dropped chip
       let chipPlacement = [];
       
@@ -328,7 +327,7 @@ export default class Grid extends React.Component {
     }
   
     this.setState({
-      gameWon: true,
+      gameStatus: 1,
       winner: winner,
       color: winningColor,
     })
@@ -337,7 +336,7 @@ export default class Grid extends React.Component {
   // End game if all spaces are filled with no winner
   handleDraw() {
     this.setState({
-      gameDraw: true,
+      gameStatus: 2,
       color: 3,
     })  
   }
@@ -349,39 +348,39 @@ export default class Grid extends React.Component {
     
     return(
       <>
-      { this.state.gameOn && this.state.gameWon === false && this.state.gameDraw === false ? 
-        <header className={`color-${textColor}`}>
-          <Typography variant="h6" pt={1} >{status}</Typography>
-          <Typography variant="h6" id="scorekeep" pt={0}><span className="score color-1">{scoreRed}</span> – <span className="score color-2">{scoreBlack}</span></Typography>
-        </header> : null  }
+      { this.state.gameOn ?
 
-      { this.state.gameOn && this.state.gameWon && this.state.gameDraw === false ? 
-        <header className={`color-${this.state.color}`}>
-          <Typography variant="h2" mb={1}> {`${this.state.winner} wins!`}</Typography>
-          <Typography variant="h2" id="scorekeep"><span className="score color-1">{scoreRed}</span> – <span className="score color-2">{scoreBlack}</span></Typography>
-          <Button variant="contained" size="large" color="primary" sx={{ mt: 1, mb:2, border:1, bgcolor:"transparent" }} onClick={ () => this.buildGameGrid() } className="">Start New Game</Button>
-        </header> : null
-      }
-
-      { this.state.gameOn && this.state.gameWon === false && this.state.gameDraw ? 
-        <header className={`color-${this.state.color}`}>
-          <Typography variant="h2" mb={1}>Draw! Nobody Wins.</Typography>
-          <Typography variant="h2" id="scorekeep"><span className="score color-1">{scoreRed}</span> – <span className="score color-2">{scoreBlack}</span></Typography>
-          <Button variant="contained" size="large" color="primary" sx={{ mt: 1, mb:2, border:1, bgcolor:"transparent" }} onClick={ () => this.buildGameGrid() } className="">Start New Game</Button>
-        </header> : null
-      }
-
-      <section key={2} id="grid" style={{width: this.props.width + 'px', height: this.props.height + 'px' }}>
-
-        { this.state.gameOn ? this.state.grid : 
+        <section>
+          <Header
+            status={status}
+            textColor={textColor}
+            scoreRed={scoreRed}
+            scoreBlack={scoreBlack}
+            winner={this.state.winner}
+            color={this.state.color}
+            gameStatus={this.state.gameStatus}
+          >
+            { this.state.gameStatus === 1 || this.state.gameStatus === 2 ?
+              <div className={`color-${this.textColor}`} >
+                <Button variant="contained" size="large" color="primary" sx={{ mt: 1, mb:2, border:1, bgcolor:"transparent" }} onClick={ () => this.buildGameGrid() } >Start New Game</Button>
+              </div>
+              : null
+            }
+          </Header>
+  
+          <div key={2} id="grid" style={{width: this.props.width + 'px', height: this.props.height + 'px' }}>
+            { this.state.grid }
+          </div>
+        </section>
+      :
+        <section key={2} id="grid" style={{width: this.props.width + 'px', height: this.props.height + 'px' }}>  
           <header>
             <Typography variant="h2">Classic Connect Four!</Typography>
             <Typography variant="h6" mb={2}>Try to get four in a row horizontally, vertically, or diagonally.</Typography>
             <Button variant="contained" size="large" color="primary" onClick={ () => this.buildGameGrid() } className="">Start New Game</Button>
           </header>
-        }
-        
-      </section>
+        </section>        
+      }
       </>
     )
   }
