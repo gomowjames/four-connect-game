@@ -26,6 +26,12 @@ code {
   background-color: black;
 }
 
+/* For use if game is a draw */
+#game header.color-3 {
+  color: white;
+  background-color: #636363;
+}
+
 #scorekeep {
   display: block;
   margin-top: 0.5rem;

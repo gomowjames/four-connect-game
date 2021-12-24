@@ -18,6 +18,8 @@ export default class Grid extends React.Component {
     this.state = {
       gameOn: false,
       gameWon: false,
+      gameDraw: false,
+      chipCounter: 0,
       winner: 0,
       grid: [],
       player1: true,
@@ -68,7 +70,9 @@ export default class Grid extends React.Component {
     this.setState({
       grid: gameGrid,
       gameOn: true,
-      gameWon: false
+      gameWon: false,
+      gameDraw: false,
+      chipCounter: 1,
     });
   }
 
@@ -121,9 +125,7 @@ export default class Grid extends React.Component {
   
           // Add the slot position to be colored
           chipPlacement.push( position[0], y );
-  
-  //console.log(chipPlacement);
-  
+    
           // End the loop
           break;
         } 
@@ -134,117 +136,41 @@ export default class Grid extends React.Component {
         return {
           grid: this.updateGameGrid(),
           player1: !prevState.player1,
+          chipCounter: prevState.chipCounter + 1,
         }
       })
-  
-      if( this.checkWinVertical( chipPlacement, this.state.player1 ? 1 : 2 ) === true ) {
-        this.showWinner(this.state.player1 );
-      } else if ( this.checkWinHorizontal( chipPlacement, this.state.player1 ? 1 : 2 ) === true ) {
-        this.showWinner(this.state.player1 );
-      } else if ( this.checkWinDiagDown( chipPlacement, this.state.player1 ? 1 : 2 ) === true ) {
-        this.showWinner(this.state.player1 );
-      } else if ( this.checkWinDiagUp( chipPlacement, this.state.player1 ? 1 : 2 ) === true ) {
-        this.showWinner(this.state.player1 );
+
+      // Check for winner and check for a draw
+      if(
+          this.checkWinVertical( chipPlacement, this.state.player1 ? 1 : 2 ) === true ||
+          this.checkWinHorizontal( chipPlacement, this.state.player1 ? 1 : 2 ) === true ||
+          this.checkWinDiagDown( chipPlacement, this.state.player1 ? 1 : 2 ) === true ||
+          this.checkWinDiagUp( chipPlacement, this.state.player1 ? 1 : 2 ) === true
+        ) {
+          this.showWinner( this.state.player1 );
+        } else if( this.state.chipCounter >= ( xAxis * yAxis ) ) {
+          this.handleDraw();
       }
     }
   }
 
-checkWinVertical( position, player ) {
-
-  let diffTotal = 0; // represents slots below of played position
+  checkWinVertical( position, player ) {
   
-  while(true) {
-    if( position[1] + diffTotal + 1 === yAxis ) {
-      break;
-    }
-    diffTotal += 1;    
-  }
-  
-  let countdown = 0;
-  let consecutive = 0;
-  
-  while(true) {
-
-    if( this.gridModel[position[0]][position[1] + diffTotal - countdown] === player ) {
-
-      consecutive += 1;
-
-      if( consecutive === toWin ) {
-        return true;
+    let diffTotal = 0; // represents slots below of played position
+    
+    while(true) {
+      if( position[1] + diffTotal + 1 === yAxis ) {
+        break;
       }
-
-    } else {
-      consecutive = 0;
-    }
-
-    // -1 represents end of array so break or else crash
-    if( position[1] + diffTotal - ( countdown + 1 ) === -1 ) {
-      break;
+      diffTotal += 1;    
     }
     
-    countdown += 1;
-  }
-
-  return false;
-}
-
-checkWinHorizontal( position, player ) {
-  let diffTotal = 0; // represents slots right of played position
+    let countdown = 0;
+    let consecutive = 0;
+    
+    while(true) {
   
-  while(true) {
-    if( position[0] + diffTotal + 1 === xAxis ) {
-      break;
-    }
-    diffTotal += 1;
-  }
-
-  let countdown = 0;
-  let consecutive = 0;
-
-  while(true) {
-
-    if( this.gridModel[position[0] + diffTotal - countdown][position[1]] === player ) {
-
-      consecutive += 1;
-
-      if( consecutive === toWin ) {
-        return true;
-      }
-
-    } else {
-      consecutive = 0;
-    }
-    
-    // -1 represents end of array so break or else crash
-    if( position[0] + diffTotal - ( countdown + 1 ) === -1 ) {
-      break;
-    }
-    
-    countdown += 1;
-  }
-  
-  return false;
-}
-
-checkWinDiagDown( position, player ) {
-  let diffTotal = 0; // represents slots right of played position
-  
-  while(true) {
-    if( position[0] + diffTotal + 1 === xAxis ) {
-      break;
-    } else if( position[1] + diffTotal + 1 === yAxis) {
-      break;
-    }
-    
-    diffTotal += 1;
-  }
-
-  let countdown = 0;
-  let consecutive = 0;
-
-  while(true) {
-
-      if( this.gridModel[position[0] + diffTotal - countdown][position[1] + diffTotal - countdown] === player ) {
+      if( this.gridModel[position[0]][position[1] + diffTotal - countdown] === player ) {
   
         consecutive += 1;
   
@@ -255,40 +181,34 @@ checkWinDiagDown( position, player ) {
       } else {
         consecutive = 0;
       }
-
-
-    // -1 represents end of array so break or else crash
-    if( position[0] + diffTotal - ( countdown + 1 ) === -1 ) {
-      break;
-    } else if( position[1] + diffTotal - ( countdown + 1 ) === -1 ) {
-      break;
+  
+      // -1 represents end of array so break or else crash
+      if( position[1] + diffTotal - ( countdown + 1 ) === -1 ) {
+        break;
+      }
+      
+      countdown += 1;
     }
-    
-    countdown += 1;
+  
+    return false;
   }
   
-  return false;
-}
-
-checkWinDiagUp( position, player ) {
-  let diffTotal = 0;
-  
-  while(true) {
-    if( position[0] + diffTotal + 1 === xAxis ) {
-      break;
-    } else if( position[1] - diffTotal - 1 === -1 ) {
-      break;
-    }
+  checkWinHorizontal( position, player ) {
+    let diffTotal = 0; // represents slots right of played position
     
-    diffTotal += 1;
-  }
-
-  let countdown = 0;
-  let consecutive = 0;
-
-  while(true) {
-
-      if( this.gridModel[position[0] + diffTotal - countdown][position[1] - diffTotal + countdown] === player ) {
+    while(true) {
+      if( position[0] + diffTotal + 1 === xAxis ) {
+        break;
+      }
+      diffTotal += 1;
+    }
+  
+    let countdown = 0;
+    let consecutive = 0;
+  
+    while(true) {
+  
+      if( this.gridModel[position[0] + diffTotal - countdown][position[1]] === player ) {
   
         consecutive += 1;
   
@@ -299,36 +219,128 @@ checkWinDiagUp( position, player ) {
       } else {
         consecutive = 0;
       }
-
-    // -1 represents end of array so break or else crash
-    if( position[0] + diffTotal - ( countdown + 1 ) === -1 ) {
-      break;
-    } else if( position[1] - diffTotal + ( countdown + 1 ) === yAxis ) {
-      break;
-    }    
-    countdown += 1;
+      
+      // -1 represents end of array so break or else crash
+      if( position[0] + diffTotal - ( countdown + 1 ) === -1 ) {
+        break;
+      }
+      
+      countdown += 1;
+    }
+    
+    return false;
   }
   
-  return false;
-}
-
-showWinner( player ) {
+  checkWinDiagDown( position, player ) {
+    let diffTotal = 0; // represents slots right of played position
+    
+    while(true) {
+      if( position[0] + diffTotal + 1 === xAxis ) {
+        break;
+      } else if( position[1] + diffTotal + 1 === yAxis) {
+        break;
+      }
+      
+      diffTotal += 1;
+    }
   
-let winner = player ? 'Red' : 'Black';
-let winningColor = player ? 1 : 2;
-
-  if( winningColor === 1 ) {
-    scoreRed += 1;
-  } else {
-    scoreBlack += 1;
+    let countdown = 0;
+    let consecutive = 0;
+  
+    while(true) {
+  
+        if( this.gridModel[position[0] + diffTotal - countdown][position[1] + diffTotal - countdown] === player ) {
+    
+          consecutive += 1;
+    
+          if( consecutive === toWin ) {
+            return true;
+          }
+    
+        } else {
+          consecutive = 0;
+        }
+  
+  
+      // -1 represents end of array so break or else crash
+      if( position[0] + diffTotal - ( countdown + 1 ) === -1 ) {
+        break;
+      } else if( position[1] + diffTotal - ( countdown + 1 ) === -1 ) {
+        break;
+      }
+      
+      countdown += 1;
+    }
+    
+    return false;
   }
-
-  this.setState({
-    gameWon: true,
-    winner: winner,
-    color: winningColor,
-  })
-}
+  
+  checkWinDiagUp( position, player ) {
+    let diffTotal = 0;
+    
+    while(true) {
+      if( position[0] + diffTotal + 1 === xAxis ) {
+        break;
+      } else if( position[1] - diffTotal - 1 === -1 ) {
+        break;
+      }
+      
+      diffTotal += 1;
+    }
+  
+    let countdown = 0;
+    let consecutive = 0;
+  
+    while(true) {
+  
+        if( this.gridModel[position[0] + diffTotal - countdown][position[1] - diffTotal + countdown] === player ) {
+    
+          consecutive += 1;
+    
+          if( consecutive === toWin ) {
+            return true;
+          }
+    
+        } else {
+          consecutive = 0;
+        }
+  
+      // -1 represents end of array so break or else crash
+      if( position[0] + diffTotal - ( countdown + 1 ) === -1 ) {
+        break;
+      } else if( position[1] - diffTotal + ( countdown + 1 ) === yAxis ) {
+        break;
+      }    
+      countdown += 1;
+    }
+    
+    return false;
+  }
+  
+  showWinner( player ) {
+    let winner = player ? 'Red' : 'Black';
+    let winningColor = player ? 1 : 2;
+    
+    if( winningColor === 1 ) {
+      scoreRed += 1;
+    } else {
+      scoreBlack += 1;
+    }
+  
+    this.setState({
+      gameWon: true,
+      winner: winner,
+      color: winningColor,
+    })
+  }
+  
+  // End game if all spaces are filled with no winner
+  handleDraw() {
+    this.setState({
+      gameDraw: true,
+      color: 3,
+    })  
+  }
 
   render() {
     
@@ -337,9 +349,27 @@ let winningColor = player ? 1 : 2;
     
     return(
       <>
-      { this.state.gameOn && this.state.gameWon === false ? <header className={`color-${textColor}`}><Typography variant="h6" pt={1} >{status}</Typography><Typography variant="h6" id="scorekeep" pt={0}><span className="score color-1">{scoreRed}</span> – <span className="score color-2">{scoreBlack}</span></Typography></header> : null  }
+      { this.state.gameOn && this.state.gameWon === false && this.state.gameDraw === false ? 
+        <header className={`color-${textColor}`}>
+          <Typography variant="h6" pt={1} >{status}</Typography>
+          <Typography variant="h6" id="scorekeep" pt={0}><span className="score color-1">{scoreRed}</span> – <span className="score color-2">{scoreBlack}</span></Typography>
+        </header> : null  }
 
-      { this.state.gameOn && this.state.gameWon === true ? <header className={`color-${this.state.color}`}><Typography variant="h2" mb={1}> {`${this.state.winner} wins!`}</Typography><Typography variant="h2" id="scorekeep"><span className="score color-1">{scoreRed}</span> – <span className="score color-2">{scoreBlack}</span></Typography><Button variant="contained" size="large" color="primary" sx={{ mt: 1, mb:2, border:1, bgcolor:"transparent" }} onClick={ () => this.buildGameGrid() } className="">Start New Game</Button></header> : null  }
+      { this.state.gameOn && this.state.gameWon && this.state.gameDraw === false ? 
+        <header className={`color-${this.state.color}`}>
+          <Typography variant="h2" mb={1}> {`${this.state.winner} wins!`}</Typography>
+          <Typography variant="h2" id="scorekeep"><span className="score color-1">{scoreRed}</span> – <span className="score color-2">{scoreBlack}</span></Typography>
+          <Button variant="contained" size="large" color="primary" sx={{ mt: 1, mb:2, border:1, bgcolor:"transparent" }} onClick={ () => this.buildGameGrid() } className="">Start New Game</Button>
+        </header> : null
+      }
+
+      { this.state.gameOn && this.state.gameWon === false && this.state.gameDraw ? 
+        <header className={`color-${this.state.color}`}>
+          <Typography variant="h2" mb={1}>Draw! Nobody Wins.</Typography>
+          <Typography variant="h2" id="scorekeep"><span className="score color-1">{scoreRed}</span> – <span className="score color-2">{scoreBlack}</span></Typography>
+          <Button variant="contained" size="large" color="primary" sx={{ mt: 1, mb:2, border:1, bgcolor:"transparent" }} onClick={ () => this.buildGameGrid() } className="">Start New Game</Button>
+        </header> : null
+      }
 
       <section key={2} id="grid" style={{width: this.props.width + 'px', height: this.props.height + 'px' }}>
 

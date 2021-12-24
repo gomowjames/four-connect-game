@@ -8,7 +8,7 @@ theme = responsiveFontSizes(theme);
 
 function App() {
   return (
-    <ThemeProvider theme={theme} className="App">
+    <ThemeProvider theme={theme}>
     
       <Game />
     
