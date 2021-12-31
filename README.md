@@ -1,6 +1,6 @@
 # The Classic Connect Four Game
 
-Play it [here](http://barrettjbutterfield.com/connect-four)
+Play it [here](http://barrettjbutterfield.com/_projects/connect-four)
 
 ---
 
